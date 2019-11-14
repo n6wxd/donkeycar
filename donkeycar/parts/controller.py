@@ -650,7 +650,8 @@ class JoystickController(object):
                  steering_scale=1.0,
                  throttle_dir=-1.0,
                  dev_fn='/dev/input/js0',
-                 auto_record_on_throttle=True):
+                 auto_record_on_throttle=True,
+                 model_loaded=False):
 
         self.angle = 0.0
         self.throttle = 0.0
@@ -671,6 +672,7 @@ class JoystickController(object):
         self.estop_state = self.ES_IDLE
         self.chaos_monkey_steering = None
         self.dead_zone = 0.0
+        self.model_loaded = model_loaded
 
         self.button_down_trigger_map = {}
         self.button_up_trigger_map = {}
@@ -1308,7 +1310,8 @@ class RC3ChanJoystickController(JoystickController):
             self.emergency_stop()
 
     def on_switch_down(self):
-        self.toggle_mode()
+        if self.model_loaded = True:
+            self.toggle_mode()
 
     def init_trigger_maps(self):
         #init set of mapping from buttons to function calls
@@ -1402,7 +1405,7 @@ class JoyStickSub(object):
         return ret
 
 
-def get_js_controller(cfg):
+def get_js_controller(cfg, model_path=None):
     cont_class = None
     if cfg.CONTROLLER_TYPE == "ps3":
         cont_class = PS3JoystickController
@@ -1421,10 +1424,17 @@ def get_js_controller(cfg):
     else:
         raise("Unknown controller type: " + cfg.CONTROLLER_TYPE)
 
+    # Check is model path is passed in and set the model_loaded flag
+    mloaded = False
+    if model_path != None:
+        mloaded = True
+
     ctr = cont_class(throttle_dir=cfg.JOYSTICK_THROTTLE_DIR,
                                 throttle_scale=cfg.JOYSTICK_MAX_THROTTLE,
                                 steering_scale=cfg.JOYSTICK_STEERING_SCALE,
-                                auto_record_on_throttle=cfg.AUTO_RECORD_ON_THROTTLE)
+                                auto_record_on_throttle=cfg.AUTO_RECORD_ON_THROTTLE,
+                                dev_fn=cfg.JOYSTICK_DEVICE,
+                                model_loaded=mloaded)
 
     ctr.set_deadzone(cfg.JOYSTICK_DEADZONE)
     return ctr

@@ -123,7 +123,7 @@ def drive(cfg, model_path=None, use_joystick=False, model_type=None, camera_type
         #modify steering_scale lower than 1.0 to have less responsive steering
         from donkeycar.parts.controller import get_js_controller
         
-        ctr = get_js_controller(cfg)
+        ctr = get_js_controller(cfg, model_path)
         
         if cfg.USE_NETWORKED_JS:
             from donkeycar.parts.controller import JoyStickSub
