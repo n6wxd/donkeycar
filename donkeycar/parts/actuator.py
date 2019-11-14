@@ -678,3 +678,29 @@ class ServoBlaster(object):
         self.run((self.max + self.min) / 2)
         self.servoblaster.close()
 
+
+class RosBotHat:
+    ''' 
+    Eesc and servo controller using RosBot board class.
+    See donkeycar/parts/RosBot.py
+    '''
+    def __init__(self, channel,, frequency=60, busnum=None):
+        print("Starting-up the RosBot Hat")
+        # Initialise the RosBot Hat witv correct USB serial port.
+        from rosbot import RosBot
+        self.rb = RosBot(dev="/dev/ttyUSB0")
+        self.rb.set_pwm_freq(frequency)
+
+        #we install our own write that is more efficient use of interrupts
+        self.rb.set_pwm = self.set_pwm
+        
+    def set_pulse(self, pulse):
+        self.set_pwm(self.channel, 0, pulse) 
+
+    def set_pwm(self, channel, on, off):
+        #print("pulse", off)
+        """Sets a single PWM channel."""
+        self.rb.writeList(self.register, [off & 0xFF, off >> 8])
+        
+    def run(self, pulse):
+        self.set_pulse(pulse)
