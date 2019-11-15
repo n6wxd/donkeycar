@@ -1310,7 +1310,7 @@ class RC3ChanJoystickController(JoystickController):
             self.emergency_stop()
 
     def on_switch_down(self):
-        if self.model_loaded = True:
+        if self.model_loaded == True:
             self.toggle_mode()
 
     def init_trigger_maps(self):
